@@ -69,7 +69,7 @@ nav a.active {
 }
 
 .panel {
-  padding: 0 15px;
+  padding: 0 15px 15px;
   background-color: #f8f6f2;
   display: none;
   overflow: hidden;
@@ -94,25 +94,32 @@ nav a.active {
   background-color: #fff;
 }
 
-/* === BOUTONS DE CLUBS (SOUS LES FILTRES) === */
+/* === BOUTONS DE CLUBS (dans la colonne gauche) === */
 .club-buttons {
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  justify-content: flex-start;
-  margin-top: 1rem;
-  padding-top: 0.8rem;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.4rem;
+  margin-top: 1.5rem;
   border-top: 1px solid #c0b28a;
+  padding-top: 0.8rem;
+}
+
+.club-title {
+  font-weight: bold;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
 }
 
 .club-btn {
   background: #eae2cf;
   border: 1px solid #c0b28a;
   border-radius: 6px;
-  padding: 0.4rem 0.9rem;
+  padding: 0.5rem;
   font-family: 'Georgia', serif;
   cursor: pointer;
   transition: all 0.2s ease;
+  text-align: center;
 }
 
 .club-btn:hover {
@@ -187,5 +194,10 @@ figcaption {
   }
   .filters {
     width: 100%;
+  }
+  .club-buttons {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
   }
 }

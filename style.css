@@ -230,7 +230,6 @@ a:hover {
 
 
 .card img {
-  width: 65%;
   height: 350px;              /* plus petite taille */
   object-fit: cover;          /* garde le cadrage propre */
   border-bottom: 1px solid #c0b28a;

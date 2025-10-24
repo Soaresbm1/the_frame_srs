@@ -212,3 +212,14 @@ a:hover {
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 1.5rem;
 }
+
+.card img {
+  width: 40%;
+  height: 350px;              /* plus petite taille */
+  object-fit: cover;          /* garde le cadrage propre */
+  border-bottom: 1px solid #c0b28a;
+  display: block;
+  background-color: #f8f6f2;
+  border-radius: 6px 6px 0 0; /* coins arrondis doux */
+}
+

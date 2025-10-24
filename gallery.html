@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Galerie – The_frame_srs</title>
+  <meta name="description" content="Galerie photo classée par club et par équipe – Football & Futsal – The_frame_srs." />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="index.html">The_frame_srs</a>
+    <nav class="nav">
+      <a href="gallery.html" aria-current="page">Galerie</a>
+      <a href="index.html#licence">Licence</a>
+      <a href="index.html#contact">Contact</a>
+    </nav>
+  </header>
+
+  <main class="gallery-page">
+    <h1>Galerie par Club & Équipe</h1>
+
+    <form class="filters" id="filters" aria-label="Filtres de la galerie">
+      <input type="search" id="search" placeholder="Rechercher (joueur, lieu, compétition…)" aria-label="Rechercher" />
+
+      <div class="filter-row">
+        <label class="select">
+          <span>Club</span>
+          <select id="clubSelect">
+            <option value="*">Tous les clubs</option>
+          </select>
+        </label>
+
+        <label class="select">
+          <span>Équipe</span>
+          <select id="teamSelect" disabled>
+            <option value="*">Toutes les équipes</option>
+          </select>
+        </label>
+
+        <div class="chips" role="group" aria-label="Discipline">
+          <button type="button" class="chip is-active" data-filter="*">Tout</button>
+          <button type="button" class="chip" data-filter="football">Football</button>
+          <button type="button" class="chip" data-filter="futsal">Futsal</button>
+        </div>
+      </div>
+    </form>
+
+    <section id="grid" class="grid" aria-live="polite">
+
+      <!-- Exemple Football -->
+      <figure class="card photo"
+              data-sport="football"
+              data-club="FC Neuchâtel"
+              data-team="1ère"
+              data-tags="football neuchâtel ligue régionale stade">
+        <div class="frame">
+          <img src="thumbs/FC Neuchâtel/1ère/neu_001.jpg" alt="FC Neuchâtel 1ère - duel aérien" loading="lazy" />
+        </div>
+        <figcaption>
+          <div>
+            <strong>FC Neuchâtel – 1ère</strong>
+            <small>Championnat • 2025</small>
+          </div>
+          <a class="btn btn--sm" href="full/FC Neuchâtel/1ère/neu_001.jpg" download>Télécharger</a>
+        </figcaption>
+      </figure>
+
+      <!-- Exemple Futsal -->
+      <figure class="card photo"
+              data-sport="futsal"
+              data-club="FC Neuchâtel"
+              data-team="U17"
+              data-tags="futsal u17 salle tournoi pressing">
+        <div class="frame">
+          <img src="thumbs/FC Neuchâtel/U17/neu_futsal_001.jpg" alt="FC Neuchâtel U17 futsal - frappe" loading="lazy" />
+        </div>
+        <figcaption>
+          <div>
+            <strong>FC Neuchâtel – U17</strong>
+            <small>Tournoi Futsal • 2025</small>
+          </div>
+          <a class="btn btn--sm" href="full/FC Neuchâtel/U17/neu_futsal_001.jpg" download>Télécharger</a>
+        </figcaption>
+      </figure>
+
+      <!-- Exemple Féminines -->
+      <figure class="card photo"
+              data-sport="football"
+              data-club="US La Chaux-de-Fonds"
+              data-team="Féminines"
+              data-tags="football féminin lcf attaque tir">
+        <div class="frame">
+          <img src="thumbs/US La Chaux-de-Fonds/Feminines/lcf_001.jpg" alt="US LCF Féminines - tir croisé" loading="lazy" />
+        </div>
+        <figcaption>
+          <div>
+            <strong>US La Chaux-de-Fonds – Féminines</strong>
+            <small>Coupe • 2025</small>
+          </div>
+          <a class="btn btn--sm" href="full/US La Chaux-de-Fonds/Feminines/lcf_001.jpg" download>Télécharger</a>
+        </figcaption>
+      </figure>
+
+    </section>
+  </main>
+
+  <dialog id="lightbox" class="lightbox" aria-label="Agrandir la photo">
+    <button class="lightbox__close" data-close>&times;</button>
+    <img id="lightboxImage" alt="" />
+    <div class="lightbox__actions">
+      <a id="lightboxDownload" class="btn" href="#" download>Télécharger l’original</a>
+    </div>
+  </dialog>
+
+  <footer class="site-footer">
+    <small>© <span id="year"></span> The_frame_srs</small>
+  </footer>
+
+  <script src="script.js" defer></script>
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>

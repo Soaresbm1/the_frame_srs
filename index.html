@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>The_frame_srs – Photographie Football & Futsal</title>
+  <meta name="description" content="Portfolio photo The_frame_srs – un regard classique sur le football et le futsal." />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="index.html" aria-current="page">The_frame_srs</a>
+    <nav class="nav">
+      <a href="gallery.html">Galerie</a>
+      <a href="#licence">Licence</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="frame frame--double">
+        <img class="logo-mark" src="img/logo.jpg" alt="The Soares's Frame – logotype" />
+        <h1>The_frame_srs</h1>
+        <p>Un regard classique sur le football & futsal. Téléchargez librement les images selon la licence.</p>
+        <div style="display:flex; gap:10px; justify-content:center; margin-top:8px">
+          <a class="btn" href="gallery.html">Voir la galerie</a>
+          <a class="btn btn--ghost" href="#licence">Licence</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="licence" class="card">
+      <div class="frame">
+        <h2>Licence d’utilisation</h2>
+        <p>CC BY 4.0 – mention « The_frame_srs » et lien vers ce site.</p>
+        <ul>
+          <li>✅ Usage presse, réseaux sociaux, projets avec attribution.</li>
+          <li>🚫 Interdit : revente directe ou modification sans autorisation.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="contact" class="card">
+      <div class="frame">
+        <h2>Contact</h2>
+        <ul class="contact-list">
+          <li>Email : <a href="mailto:soaresfrancisca2005@gmail.com">soaresfrancisca2005@gmail.com</a></li>
+          <li>Instagram : <a href="https://www.instagram.com/the_frame._srs" target="_blank">@the_frame._srs</a></li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <small>© <span id="year"></span> The_frame_srs – Football & Futsal</small>
+  </footer>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>

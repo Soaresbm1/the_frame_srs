@@ -28,3 +28,38 @@ teamSelect.addEventListener('change', filterGallery);
 
 // --- Année automatique dans le footer ---
 document.getElementById('year').textContent = new Date().getFullYear();
+
+
+fetch("data.json")
+  .then(response => response.json())
+  .then(data => {
+    const gallery = document.getElementById("gallery");
+
+    Object.keys(data).forEach(club => {
+      Object.keys(data[club]).forEach(team => {
+        const photos = data[club][team];
+
+        photos.forEach(filename => {
+          const figure = document.createElement("figure");
+          figure.classList.add("card", "photo");
+          figure.dataset.club = club;
+          figure.dataset.team = team;
+
+          figure.innerHTML = `
+            <img src="thumbs/${club.replaceAll(' ', '_')}/${team.replaceAll(' ', '_')}/${filename}"
+                 alt="${club} ${team}" loading="lazy">
+            <figcaption>
+              <div>
+                <strong>${club} – ${team}</strong>
+              </div>
+              <a class="btn btn--sm" href="full/${club.replaceAll(' ', '_')}/${team.replaceAll(' ', '_')}/${filename}" download>
+                Télécharger
+              </a>
+            </figcaption>
+          `;
+          gallery.appendChild(figure);
+        });
+      });
+    });
+  })
+  .catch(error => console.error("Erreur de chargement des données :", error));

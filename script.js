@@ -1,15 +1,16 @@
 /*************** CONFIG ***************/
 const GH_OWNER = "Soaresbm1";          // <-- ton pseudo GitHub
 const GH_REPO  = "the_frame_srs";      // <-- nom du dépôt
-const GH_BRANCH = "main";               // "main" ou "gh-pages" si tu utilises une autre branche
+const GH_BRANCH = "main";              // <-- branche principale
 
-// clubs/équipes (seulement la liste ; pas les fichiers)
+// Clubs et équipes
 const STRUCTURE = {
   "FC Le Parc": ["Inter A", "Juniors B", "2ème Futsal"],
   "FC La Chaux-de-Fonds": ["Inter A", "Juniors B"]
 };
 /*************************************/
 
+// --- Accordéon ---
 const acc = document.querySelector('.accordion');
 const panel = document.querySelector('.panel');
 if (acc && panel) {
@@ -19,12 +20,13 @@ if (acc && panel) {
   });
 }
 
+// --- Filtres & galerie ---
 const clubSelect = document.getElementById('club-select');
 const teamSelect = document.getElementById('team-select');
 const galleryEl  = document.getElementById('gallery');
 
-function slugifyPath(text){
-  // On garde ta convention de dossiers déjà existants
+// Fonction pour transformer les noms (sans accents/espaces)
+function slugifyPath(text) {
   return text
     .replaceAll(" ", "_")
     .replaceAll("é","e")
@@ -34,12 +36,13 @@ function slugifyPath(text){
     .replaceAll("ç","c");
 }
 
-function fileIsImage(name){
+// Vérifie si le fichier est une image valide
+function fileIsImage(name) {
   return /\.(jpe?g|png|webp)$/i.test(name);
 }
 
-// Appelle l'API GitHub pour lister les fichiers d’un dossier
-async function listGithubFiles(path){
+// Liste les fichiers depuis GitHub via API
+async function listGithubFiles(path) {
   const url = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${path}?ref=${GH_BRANCH}`;
   const res = await fetch(url);
   if (!res.ok) return [];
@@ -47,12 +50,14 @@ async function listGithubFiles(path){
   return Array.isArray(data) ? data.filter(f => f && f.name && fileIsImage(f.name)) : [];
 }
 
-// Construit une carte photo
-function makeCard({club, team, filename}){
+// Crée une carte (photo + légende)
+function makeCard({club, team, filename}) {
   const clubPath = slugifyPath(club);
   const teamPath = slugifyPath(team);
-  const thumbSrc = `thumbs/${clubPath}/${teamPath}/${filename}`;
+
+  // On affiche directement les images du dossier full/
   const fullHref = `full/${clubPath}/${teamPath}/${filename}`;
+  const thumbSrc = fullHref; // pas besoin de thumbs séparé
 
   const fig = document.createElement('figure');
   fig.className = 'card photo';
@@ -69,36 +74,32 @@ function makeCard({club, team, filename}){
   return fig;
 }
 
-// Charge toutes les photos automatiquement
-async function loadGallery(){
-  galleryEl.innerHTML = ""; // reset
-
-  for (const club of Object.keys(STRUCTURE)){
-    for (const team of STRUCTURE[club]){
+// Charge automatiquement toutes les photos
+async function loadGallery() {
+  galleryEl.innerHTML = "";
+  for (const club of Object.keys(STRUCTURE)) {
+    for (const team of STRUCTURE[club]) {
       const clubPath = slugifyPath(club);
       const teamPath = slugifyPath(team);
-      const path = `thumbs/${clubPath}/${teamPath}`;
-
-      try{
+      const path = `full/${clubPath}/${teamPath}`; // <== on lit directement dans "full"
+      try {
         const files = await listGithubFiles(path);
         files.forEach(f => {
           const card = makeCard({club, team, filename: f.name});
           galleryEl.appendChild(card);
         });
-      }catch(e){
+      } catch (e) {
         console.error("Erreur chargement dossier:", path, e);
       }
     }
   }
-
-  // Active les filtres une fois la galerie construite
   setupFilters();
 }
 
-function setupFilters(){
+// Filtrage par club et équipe
+function setupFilters() {
   const photos = document.querySelectorAll('.photo');
-
-  function filterGallery(){
+  function filterGallery() {
     const club = clubSelect ? clubSelect.value : 'all';
     const team = teamSelect ? teamSelect.value : 'all';
     photos.forEach(p => {
@@ -107,15 +108,14 @@ function setupFilters(){
       p.style.display = (okClub && okTeam) ? 'block' : 'none';
     });
   }
-
   if (clubSelect) clubSelect.addEventListener('change', filterGallery);
   if (teamSelect) teamSelect.addEventListener('change', filterGallery);
-  filterGallery(); // premier passage
+  filterGallery();
 }
 
-// Année footer
+// --- Année automatique ---
 const year = document.getElementById('year');
 if (year) year.textContent = new Date().getFullYear();
 
-// Lance le chargement auto
+// --- Lancement ---
 if (galleryEl) loadGallery();

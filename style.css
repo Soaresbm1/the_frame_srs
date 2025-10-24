@@ -1,146 +1,54 @@
 /* === STYLE GLOBAL === */
 body {
-  font-family: "Georgia", serif;
+  font-family: "Segoe UI", Arial, sans-serif;
   background-color: #f8f6f2;
   color: #333;
   margin: 0;
-  padding: 0;
 }
 
 /* === HEADER === */
 .site-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 15px 30px;
-  border-bottom: 2px solid #c0b28a;
-  background-color: #f8f6f2;
-}
-
-.site-header .brand {
-  font-weight: bold;
-  font-size: 1.2rem;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  text-decoration: none;
-  color: #000;
-}
-
-.nav a {
-  margin-left: 20px;
-  text-decoration: none;
-  color: #333;
-  font-weight: 500;
-}
-
-.nav a:hover,
-.nav a.active {
-  border-bottom: 2px solid #c0b28a;
-}
-
-/* === HERO / ACCUEIL === */
-.hero {
-  display: flex;
-  justify-content: center;
   text-align: center;
-  padding: 40px 15px;
+  padding: 1rem;
+  border-bottom: 2px solid #c0b28a;
 }
 
-.frame {
-  border: 3px double #c0b28a;
-  padding: 30px 20px;
-  max-width: 700px;
-  margin: auto;
-  background-color: #fdfbf7;
+.site-header h1 {
+  margin: 0.3rem 0;
+  font-family: "Georgia", serif;
+  letter-spacing: 1px;
 }
 
-.frame--double {
-  border: 4px double #c0b28a;
+nav {
+  margin-top: 0.5rem;
 }
 
-.logo-mark {
-  width: 80px;
-  margin-bottom: 10px;
-}
-
-h1 {
-  font-size: 2rem;
-  letter-spacing: 2px;
-  margin-bottom: 10px;
-}
-
-p {
-  margin: 10px 0 20px;
-}
-
-.btn {
-  display: inline-block;
-  padding: 8px 16px;
-  background-color: #e9e2d0;
-  border: 1px solid #c0b28a;
+nav a {
   text-decoration: none;
-  color: #000;
-  border-radius: 6px;
-  font-weight: 500;
-  transition: all 0.2s ease;
-}
-
-.btn:hover {
-  background-color: #d6c9a9;
-}
-
-.btn--ghost {
-  background-color: transparent;
-}
-
-/* === LICENCE & CONTACT === */
-.card {
-  max-width: 700px;
-  margin: 40px auto;
-  border: 2px solid #d9cfa9;
-  background-color: #fffefc;
-  padding: 20px;
-  border-radius: 6px;
-}
-
-.card h2 {
-  margin-top: 0;
-  font-size: 1.3rem;
-  border-bottom: 1px solid #d9cfa9;
-  padding-bottom: 5px;
-}
-
-.card ul {
-  list-style: none;
-  padding: 0;
-}
-
-.card li {
-  margin: 6px 0;
-}
-
-.contact-list a {
   color: #333;
-  text-decoration: none;
+  margin: 0 0.5rem;
+  font-weight: 500;
 }
 
-.contact-list a:hover {
-  text-decoration: underline;
+nav a.active {
+  border-bottom: 2px solid #c0b28a;
 }
 
-/* === GALERIE === */
+/* === LAYOUT GALERIE === */
 .gallery-layout {
   display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  padding: 20px;
   gap: 2rem;
+  align-items: flex-start;
+  margin: 2rem;
 }
 
 .filters {
-  min-width: 250px;
+  width: 250px;
+  position: sticky;
+  top: 2rem;
 }
 
+/* === ACCORDÉON === */
 .accordion {
   background-color: #e9e2d0;
   color: #333;
@@ -186,7 +94,45 @@ p {
   background-color: #fff;
 }
 
-/* === GALERIE D'IMAGES === */
+/* === BOUTONS DE CLUBS (dans la colonne gauche) === */
+.club-buttons {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.4rem;
+  margin-top: 1.5rem;
+  border-top: 1px solid #c0b28a;
+  padding-top: 0.8rem;
+}
+
+.club-title {
+  font-weight: bold;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+}
+
+.club-btn {
+  background: #eae2cf;
+  border: 1px solid #c0b28a;
+  border-radius: 6px;
+  padding: 0.5rem;
+  font-family: 'Georgia', serif;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+}
+
+.club-btn:hover {
+  background: #d6c8a6;
+}
+
+.club-btn.active {
+  background: #b7a46a;
+  color: white;
+  border-color: #b7a46a;
+}
+
+/* === GALERIE === */
 .gallery-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -194,7 +140,7 @@ p {
   flex-grow: 1;
 }
 
-.card.photo {
+.card {
   background-color: #fff;
   border-radius: 10px;
   overflow: hidden;
@@ -202,24 +148,24 @@ p {
   transition: transform 0.2s ease;
 }
 
-.card.photo:hover {
+.card:hover {
   transform: translateY(-5px);
 }
 
-.card.photo img {
+.card img {
+  height: 300px;
   width: 100%;
   display: block;
-  max-height: 230px;
+  max-height: 250px;
   object-fit: cover;
 }
 
 figcaption {
-  padding: 10px;
+  padding: 0.8rem;
   font-size: 0.9rem;
-  text-align: center;
 }
 
-.btn-sm {
+.btn {
   display: inline-block;
   padding: 5px 10px;
   border: 1px solid #c0b28a;
@@ -230,25 +176,29 @@ figcaption {
   font-size: 0.8rem;
 }
 
-.btn-sm:hover {
+.btn:hover {
   background-color: #d6c9a9;
 }
 
 /* === FOOTER === */
 .site-footer {
   text-align: center;
-  padding: 15px 0;
+  padding: 1rem;
   border-top: 2px solid #c0b28a;
-  margin-top: 30px;
+  margin-top: 2rem;
 }
 
 /* === RESPONSIVE === */
 @media (max-width: 800px) {
   .gallery-layout {
     flex-direction: column;
-    align-items: center;
   }
   .filters {
     width: 100%;
+  }
+  .club-buttons {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
   }
 }

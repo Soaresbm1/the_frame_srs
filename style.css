@@ -1,126 +1,128 @@
 /* === STYLE GLOBAL === */
 body {
-  font-family: "Segoe UI", Arial, sans-serif;
+  font-family: "Georgia", serif;
   background-color: #f8f6f2;
-  color: #333;
+  color: #2c2c2c;
   margin: 0;
   line-height: 1.6;
 }
 
+a {
+  color: #2c2c2c;
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+
 /* === HEADER === */
 .site-header {
-  text-align: center;
-  padding: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   border-bottom: 2px solid #c0b28a;
   background-color: #f8f6f2;
+  padding: 0.8rem 2rem;
 }
 
-.site-header h1 {
-  font-family: "Georgia", serif;
+.brand {
+  font-weight: bold;
+  font-size: 1.2rem;
+  text-transform: uppercase;
   letter-spacing: 1px;
-  font-size: 1.6rem;
-  margin: 0.2rem 0;
 }
 
-nav {
-  margin-top: 0.5rem;
-}
-
-nav a {
-  text-decoration: none;
-  color: #333;
-  margin: 0 0.6rem;
+.nav a {
+  margin-left: 1rem;
   font-weight: 500;
 }
 
-nav a.active {
+.nav a.active {
   border-bottom: 2px solid #c0b28a;
 }
 
-/* === ACCUEIL (index.html) === */
+/* === HERO === */
 .hero {
   text-align: center;
-  padding: 2rem 1rem;
+  margin: 2rem auto;
 }
 
 .frame--double {
   display: inline-block;
-  border: 12px double #c0b28a;
-  padding: 2rem;
-  border-radius: 10px;
+  border: 10px double #c0b28a;
+  padding: 2rem 3rem;
   background-color: #fdfcf8;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
 }
 
 .logo-mark {
-  width: 250px;
-  max-width: 80%;
-  border-radius: 8px;
+  width: 120px;
   display: block;
   margin: 0 auto 1rem;
 }
 
 .hero h1 {
-  font-family: "Georgia", serif;
   font-size: 2rem;
   margin-bottom: 0.3rem;
+  text-transform: uppercase;
 }
 
 .hero p {
-  font-size: 1.1rem;
-  max-width: 600px;
-  margin: 0 auto;
-  color: #555;
+  max-width: 550px;
+  margin: 0 auto 1rem;
+  color: #444;
 }
 
-/* === BOUTONS === */
+.hero-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
 .btn {
   display: inline-block;
   padding: 8px 16px;
-  border: 1px solid #c0b28a;
-  background-color: #e9e2d0;
-  border-radius: 6px;
-  text-decoration: none;
-  color: #333;
-  font-weight: 500;
-  transition: 0.2s;
+  border: 1px solid #2c2c2c;
+  background-color: #fff;
+  color: #2c2c2c;
+  font-size: 0.9rem;
+  transition: all 0.2s;
 }
 
 .btn:hover {
-  background-color: #d6c9a9;
+  background-color: #e9e2d0;
 }
 
-/* === LICENCE === */
-#licence {
-  text-align: center;
+.btn--ghost {
+  background-color: transparent;
+}
+
+/* === BLOCS INFO (LICENCE / CONTACT) === */
+.info-block {
   background-color: #fff;
-  margin: 2rem auto;
-  border-radius: 10px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-  padding: 2rem;
+  border: 2px solid #c0b28a;
+  padding: 1.5rem 2rem;
   max-width: 700px;
+  margin: 1.5rem auto;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
 }
 
-#licence ul {
+.info-block h2 {
+  font-size: 1.2rem;
+  margin-bottom: 0.8rem;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.info-block ul {
   list-style: none;
   padding: 0;
-  margin: 0;
+  margin: 0.5rem 0 0;
 }
 
-#licence li {
+.info-block li {
   margin: 0.4rem 0;
   font-size: 0.95rem;
-}
-
-/* === CONTACT === */
-#contact {
-  text-align: center;
-  margin: 3rem 0;
-}
-
-.contact-list {
-  list-style: none;
-  padding: 0;
-  margin: 1rem 0 0;
 }
 
 /* === FOOTER === */
@@ -130,36 +132,30 @@ nav a.active {
   border-top: 2px solid #c0b28a;
   margin-top: 2rem;
   background-color: #f8f6f2;
+  font-size: 0.9rem;
 }
 
-/* === GALERIE === */
-.gallery-layout {
-  display: flex;
-  gap: 2rem;
-  align-items: flex-start;
-  margin: 2rem;
-}
-
+/* === FILTRES (ACCORDÉON) === */
 .filters {
-  width: 250px;
+  width: 260px;
   position: sticky;
   top: 2rem;
 }
 
-/* --- ACCORDÉON --- */
 .accordion {
   background-color: #e9e2d0;
-  color: #333;
+  color: #2c2c2c;
   cursor: pointer;
   padding: 10px 15px;
   width: 100%;
-  border: none;
+  border: 2px solid #c0b28a;
   text-align: left;
   outline: none;
   font-weight: bold;
   font-size: 1rem;
   transition: 0.3s;
   border-radius: 10px;
+  font-family: "Georgia", serif;
 }
 
 .accordion:hover {
@@ -167,13 +163,14 @@ nav a.active {
 }
 
 .panel {
-  padding: 0 15px;
-  background-color: #f8f6f2;
+  padding: 1rem;
+  background-color: #fff;
   display: none;
   overflow: hidden;
-  border-left: 3px solid #c0b28a;
+  border: 2px solid #c0b28a;
   border-radius: 10px;
-  margin-top: 0.5rem;
+  margin-top: 0.8rem;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
 }
 
 .panel label {
@@ -192,48 +189,26 @@ nav a.active {
   background-color: #fff;
 }
 
-/* --- GRILLE GALERIE --- */
+/* === MISE EN PAGE GALERIE === */
+.gallery-layout {
+  display: flex;
+  align-items: flex-start;
+  gap: 2rem;
+  margin: 2rem;
+}
+
+/* Zone des filtres à gauche */
+.filters {
+  width: 260px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 2rem;
+}
+
+/* Zone des photos à droite */
 .gallery-grid {
+  flex-grow: 1;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 1.5rem;
-  flex-grow: 1;
-}
-
-.card {
-  background-color: #fff;
-  border-radius: 10px;
-  overflow: hidden;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-  transition: transform 0.2s ease;
-}
-
-.card:hover {
-  transform: translateY(-5px);
-}
-
-.card img {
-  width: 100%;
-  display: block;
-}
-
-figcaption {
-  padding: 0.8rem;
-  font-size: 0.9rem;
-}
-
-/* === RESPONSIVE === */
-@media (max-width: 800px) {
-  .gallery-layout {
-    flex-direction: column;
-  }
-  .filters {
-    width: 100%;
-  }
-  .logo-mark {
-    width: 180px;
-  }
-  .frame--double {
-    padding: 1.2rem;
-  }
 }

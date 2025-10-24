@@ -1,7 +1,7 @@
 // === CONFIG GITHUB ===
-const GH_OWNER = "Soaresbm1";
-const GH_REPO = "the_frame_srs";
-const GH_BRANCH = "main";
+const GH_OWNER = "Soaresbm1"; // ton pseudo GitHub
+const GH_REPO = "the_frame_srs"; // nom de ton dépôt
+const GH_BRANCH = "main"; // branche
 
 // === ACCORDÉON ===
 const acc = document.querySelector('.accordion');
@@ -48,11 +48,18 @@ async function listGithubFiles(path) {
   const url = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${path}?ref=${GH_BRANCH}`;
   console.log("➡️ API call:", url);
   const res = await fetch(url);
-  if (!res.ok) return [];
+  console.log("   ↳ status:", res.status, res.statusText);
+
+  if (!res.ok) {
+    return [];
+  }
+
   const data = await res.json();
-  return Array.isArray(data)
+  const files = Array.isArray(data)
     ? data.filter(f => f && f.name && fileIsImage(f.name))
     : [];
+  console.log(`   ↳ ${files.length} image(s) trouvée(s) dans`, path);
+  return files;
 }
 
 // === CRÉER UNE CARTE PHOTO ===
@@ -78,6 +85,7 @@ function makeCard({ club, team, filename }) {
 function filterGallery() {
   const club = clubSelect.value;
   const team = teamSelect.value;
+
   document.querySelectorAll('.photo').forEach(photo => {
     const matchesClub = club === 'all' || photo.dataset.club === club;
     const matchesTeam = team === 'all' || photo.dataset.team === team;
@@ -86,8 +94,8 @@ function filterGallery() {
 }
 
 function setupFilters() {
-  if (clubSelect) clubSelect.addEventListener('change', filterGallery);
-  if (teamSelect) teamSelect.addEventListener('change', filterGallery);
+  clubSelect.addEventListener('change', filterGallery);
+  teamSelect.addEventListener('change', filterGallery);
 }
 
 // === CHARGEMENT PRINCIPAL ===
@@ -100,6 +108,9 @@ async function loadGallery() {
       const clubPath = slugifyPath(club);
       const teamPath = slugifyPath(team);
       const path = `full/${clubPath}/${teamPath}`;
+
+      console.log("📂 Scan dossier:", path);
+
       try {
         const files = await listGithubFiles(path);
         files.forEach(f => {
@@ -126,22 +137,8 @@ async function loadGallery() {
   setupFilters();
 }
 
-// === BOUTONS CLUBS ===
-const clubButtons = document.querySelectorAll('.club-btn');
-clubButtons.forEach(btn => {
-  btn.addEventListener('click', () => {
-    clubButtons.forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    const club = btn.dataset.club;
-    document.querySelectorAll('.photo').forEach(photo => {
-      const matchesClub = club === 'all' || photo.dataset.club === club;
-      photo.style.display = matchesClub ? 'block' : 'none';
-    });
-  });
-});
-
 // === LANCEMENT ===
 loadGallery();
 
-// === ANNÉE FOOTER ===
+// === ANNÉE DANS LE FOOTER ===
 document.getElementById('year').textContent = new Date().getFullYear();

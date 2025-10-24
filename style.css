@@ -1,54 +1,146 @@
 /* === STYLE GLOBAL === */
 body {
-  font-family: "Segoe UI", Arial, sans-serif;
+  font-family: "Georgia", serif;
   background-color: #f8f6f2;
   color: #333;
   margin: 0;
+  padding: 0;
 }
 
 /* === HEADER === */
 .site-header {
-  text-align: center;
-  padding: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 30px;
   border-bottom: 2px solid #c0b28a;
+  background-color: #f8f6f2;
 }
 
-.site-header h1 {
-  margin: 0.3rem 0;
-  font-family: "Georgia", serif;
+.site-header .brand {
+  font-weight: bold;
+  font-size: 1.2rem;
+  text-transform: uppercase;
   letter-spacing: 1px;
+  text-decoration: none;
+  color: #000;
 }
 
-nav {
-  margin-top: 0.5rem;
-}
-
-nav a {
+.nav a {
+  margin-left: 20px;
   text-decoration: none;
   color: #333;
-  margin: 0 0.5rem;
   font-weight: 500;
 }
 
-nav a.active {
+.nav a:hover,
+.nav a.active {
   border-bottom: 2px solid #c0b28a;
 }
 
-/* === LAYOUT GALERIE === */
+/* === HERO / ACCUEIL === */
+.hero {
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  padding: 40px 15px;
+}
+
+.frame {
+  border: 3px double #c0b28a;
+  padding: 30px 20px;
+  max-width: 700px;
+  margin: auto;
+  background-color: #fdfbf7;
+}
+
+.frame--double {
+  border: 4px double #c0b28a;
+}
+
+.logo-mark {
+  width: 80px;
+  margin-bottom: 10px;
+}
+
+h1 {
+  font-size: 2rem;
+  letter-spacing: 2px;
+  margin-bottom: 10px;
+}
+
+p {
+  margin: 10px 0 20px;
+}
+
+.btn {
+  display: inline-block;
+  padding: 8px 16px;
+  background-color: #e9e2d0;
+  border: 1px solid #c0b28a;
+  text-decoration: none;
+  color: #000;
+  border-radius: 6px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.btn:hover {
+  background-color: #d6c9a9;
+}
+
+.btn--ghost {
+  background-color: transparent;
+}
+
+/* === LICENCE & CONTACT === */
+.card {
+  max-width: 700px;
+  margin: 40px auto;
+  border: 2px solid #d9cfa9;
+  background-color: #fffefc;
+  padding: 20px;
+  border-radius: 6px;
+}
+
+.card h2 {
+  margin-top: 0;
+  font-size: 1.3rem;
+  border-bottom: 1px solid #d9cfa9;
+  padding-bottom: 5px;
+}
+
+.card ul {
+  list-style: none;
+  padding: 0;
+}
+
+.card li {
+  margin: 6px 0;
+}
+
+.contact-list a {
+  color: #333;
+  text-decoration: none;
+}
+
+.contact-list a:hover {
+  text-decoration: underline;
+}
+
+/* === GALERIE === */
 .gallery-layout {
   display: flex;
-  gap: 2rem;
   align-items: flex-start;
-  margin: 2rem;
+  justify-content: center;
+  padding: 20px;
+  gap: 2rem;
 }
 
 .filters {
-  width: 250px;
-  position: sticky;
-  top: 2rem;
+  min-width: 250px;
 }
 
-/* === ACCORDÉON === */
 .accordion {
   background-color: #e9e2d0;
   color: #333;
@@ -94,45 +186,7 @@ nav a.active {
   background-color: #fff;
 }
 
-/* === BOUTONS DE CLUBS (dans la colonne gauche) === */
-.club-buttons {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  gap: 0.4rem;
-  margin-top: 1.5rem;
-  border-top: 1px solid #c0b28a;
-  padding-top: 0.8rem;
-}
-
-.club-title {
-  font-weight: bold;
-  font-size: 0.9rem;
-  margin-bottom: 0.5rem;
-}
-
-.club-btn {
-  background: #eae2cf;
-  border: 1px solid #c0b28a;
-  border-radius: 6px;
-  padding: 0.5rem;
-  font-family: 'Georgia', serif;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  text-align: center;
-}
-
-.club-btn:hover {
-  background: #d6c8a6;
-}
-
-.club-btn.active {
-  background: #b7a46a;
-  color: white;
-  border-color: #b7a46a;
-}
-
-/* === GALERIE === */
+/* === GALERIE D'IMAGES === */
 .gallery-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -140,7 +194,7 @@ nav a.active {
   flex-grow: 1;
 }
 
-.card {
+.card.photo {
   background-color: #fff;
   border-radius: 10px;
   overflow: hidden;
@@ -148,23 +202,24 @@ nav a.active {
   transition: transform 0.2s ease;
 }
 
-.card:hover {
+.card.photo:hover {
   transform: translateY(-5px);
 }
 
-.card img {
+.card.photo img {
   width: 100%;
   display: block;
-  max-height: 250px;
+  max-height: 230px;
   object-fit: cover;
 }
 
 figcaption {
-  padding: 0.8rem;
+  padding: 10px;
   font-size: 0.9rem;
+  text-align: center;
 }
 
-.btn {
+.btn-sm {
   display: inline-block;
   padding: 5px 10px;
   border: 1px solid #c0b28a;
@@ -175,29 +230,25 @@ figcaption {
   font-size: 0.8rem;
 }
 
-.btn:hover {
+.btn-sm:hover {
   background-color: #d6c9a9;
 }
 
 /* === FOOTER === */
 .site-footer {
   text-align: center;
-  padding: 1rem;
+  padding: 15px 0;
   border-top: 2px solid #c0b28a;
-  margin-top: 2rem;
+  margin-top: 30px;
 }
 
 /* === RESPONSIVE === */
 @media (max-width: 800px) {
   .gallery-layout {
     flex-direction: column;
+    align-items: center;
   }
   .filters {
     width: 100%;
-  }
-  .club-buttons {
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: center;
   }
 }

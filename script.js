@@ -1,7 +1,7 @@
 // === CONFIG GITHUB ===
-const GH_OWNER = "Soaresbm1"; // ton pseudo GitHub
-const GH_REPO = "the_frame_srs"; // nom du dépôt
-const GH_BRANCH = "main"; // branche
+const GH_OWNER = "Soaresbm1";
+const GH_REPO = "the_frame_srs";
+const GH_BRANCH = "main";
 
 // === ACCORDÉON ===
 const acc = document.querySelector('.accordion');
@@ -48,16 +48,11 @@ async function listGithubFiles(path) {
   const url = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${path}?ref=${GH_BRANCH}`;
   console.log("➡️ API call:", url);
   const res = await fetch(url);
-  console.log("   ↳ status:", res.status, res.statusText);
-
   if (!res.ok) return [];
-
   const data = await res.json();
-  const files = Array.isArray(data)
+  return Array.isArray(data)
     ? data.filter(f => f && f.name && fileIsImage(f.name))
     : [];
-  console.log(`   ↳ ${files.length} image(s) trouvée(s) dans`, path);
-  return files;
 }
 
 // === CRÉER UNE CARTE PHOTO ===
@@ -79,7 +74,7 @@ function makeCard({ club, team, filename }) {
   return figure;
 }
 
-// === FILTRAGE DÉROULANTS ===
+// === FILTRAGE ===
 function filterGallery() {
   const club = clubSelect.value;
   const team = teamSelect.value;
@@ -105,9 +100,6 @@ async function loadGallery() {
       const clubPath = slugifyPath(club);
       const teamPath = slugifyPath(team);
       const path = `full/${clubPath}/${teamPath}`;
-
-      console.log("📂 Scan dossier:", path);
-
       try {
         const files = await listGithubFiles(path);
         files.forEach(f => {
@@ -136,14 +128,11 @@ async function loadGallery() {
 
 // === BOUTONS CLUBS ===
 const clubButtons = document.querySelectorAll('.club-btn');
-
 clubButtons.forEach(btn => {
   btn.addEventListener('click', () => {
     clubButtons.forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
-
     const club = btn.dataset.club;
-
     document.querySelectorAll('.photo').forEach(photo => {
       const matchesClub = club === 'all' || photo.dataset.club === club;
       photo.style.display = matchesClub ? 'block' : 'none';

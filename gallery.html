@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Galerie – The Frame SRS</title>
+  <link rel="stylesheet" href="style.css" />
+  <script defer src="script.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <h1>The Frame SRS</h1>
+    <nav>
+      <a href="index.html">Accueil</a>
+      <a href="gallery.html" class="active">Galerie</a>
+    </nav>
+  </header>
+
+  <main class="gallery-layout">
+    <!-- === FILTRES À GAUCHE === -->
+    <aside class="filters">
+      <button class="accordion">🎚️ Filtres</button>
+      <div class="panel">
+        <label for="club-select">🏟️ Club</label>
+        <select id="club-select">
+          <option value="all">Tous les clubs</option>
+          <option value="FC Le Parc">FC Le Parc</option>
+          <option value="FC La Chaux-de-Fonds">FC La Chaux-de-Fonds</option>
+        </select>
+
+        <label for="team-select">⚽ Équipe</label>
+        <select id="team-select">
+          <option value="all">Toutes les équipes</option>
+          <optgroup label="FC Le Parc">
+            <option value="Inter A">Inter A</option>
+            <option value="Juniors B">Juniors B</option>
+            <option value="2ème Futsal">2ème Futsal</option>
+          </optgroup>
+          <optgroup label="FC La Chaux-de-Fonds">
+            <option value="Inter A">Inter A</option>
+            <option value="Juniors B">Juniors B</option>
+          </optgroup>
+        </select>
+      </div>
+    </aside>
+
+    <!-- === GALERIE === -->
+    <section class="gallery-grid" id="gallery">
+      <!-- Exemple FC Le Parc -->
+      <figure class="card photo"
+              data-club="FC Le Parc"
+              data-team="Inter A"
+              data-sport="football">
+        <img src="thumbs/FC_Le_Parc/Inter_A/img1.jpeg" alt="FC Le Parc Inter A – match 1" loading="lazy" />
+        <figcaption>
+          <div>
+            <strong>FC Le Parc – Inter A</strong>
+            <small>Match amical • 2025</small>
+          </div>
+          <a class="btn btn--sm" href="full/FC_Le_Parc/Inter_A/img1.jpeg" download>Télécharger</a>
+        </figcaption>
+      </figure>
+
+      <figure class="card photo"
+              data-club="FC Le Parc"
+              data-team="Inter A"
+              data-sport="football">
+        <img src="thumbs/FC_Le_Parc/Inter_A/img2.jpeg" alt="FC Le Parc Inter A – match 1" loading="lazy" />
+        <figcaption>
+          <div>
+            <strong>FC Le Parc – Inter A</strong>
+            <small>Match amical • 2025</small>
+          </div>
+          <a class="btn btn--sm" href="full/FC_Le_Parc/Inter_A/img2.jpeg" download>Télécharger</a>
+        </figcaption>
+      </figure>
+
+      <!-- Exemple FC La Chaux-de-Fonds -->
+      <figure class="card photo"
+              data-club="FC La Chaux-de-Fonds"
+              data-team="Juniors B"
+              data-sport="football">
+        <img src="thumbs/FC_La_Chaux_de_Fonds/Juniors_B/img2.jpeg" alt="FC La Chaux-de-Fonds Juniors B – match 1" loading="lazy" />
+        <figcaption>
+          <div>
+            <strong>FC La Chaux-de-Fonds – Juniors B</strong>
+            <small>Championnat • 2025</small>
+          </div>
+          <a class="btn btn--sm" href="full/FC_La_Chaux_de_Fonds/Juniors_B/img2.jpeg" download>Télécharger</a>
+        </figcaption>
+      </figure>
+
+      <figure class="card photo"
+              data-club="FC La Chaux-de-Fonds"
+              data-team="Juniors B"
+              data-sport="football">
+        <img src="thumbs/FC_La_Chaux_de_Fonds/Juniors_B/img2.jpeg" alt="FC La Chaux-de-Fonds Juniors B – match 1" loading="lazy" />
+        <figcaption>
+          <div>
+            <strong>FC La Chaux-de-Fonds – Juniors B</strong>
+            <small>Championnat • 2025</small>
+          </div>
+          <a class="btn btn--sm" href="full/FC_La_Chaux_de_Fonds/Juniors_B/img2.jpeg" download>Télécharger</a>
+        </figcaption>
+      </figure>
+
+      <figure class="card photo"
+              data-club="FC La Chaux-de-Fonds"
+              data-team="Juniors B"
+              data-sport="football">
+        <img src="thumbs/FC_La_Chaux_de_Fonds/Juniors_B/img2.jpeg" alt="FC La Chaux-de-Fonds Juniors B – match 1" loading="lazy" />
+        <figcaption>
+          <div>
+            <strong>FC La Chaux-de-Fonds – Juniors B</strong>
+            <small>Championnat • 2025</small>
+          </div>
+          <a class="btn btn--sm" href="full/FC_La_Chaux_de_Fonds/Juniors_B/match1.jpeg" download>Télécharger</a>
+        </figcaption>
+      </figure>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <small>© <span id="year"></span> The Frame SRS – Football & Futsal</small>
+  </footer>
+</body>
+</html>

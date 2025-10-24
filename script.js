@@ -28,13 +28,18 @@ const galleryEl  = document.getElementById('gallery');
 // Fonction pour transformer les noms (sans accents/espaces)
 function slugifyPath(text) {
   return text
+    .trim()
     .replaceAll(" ", "_")
+    .replaceAll("-", "_")   
     .replaceAll("é","e")
     .replaceAll("è","e")
     .replaceAll("ê","e")
     .replaceAll("à","a")
-    .replaceAll("ç","c");
+    .replaceAll("ç","c")
+    .replaceAll("ô","o")
+    .replaceAll("ï","i");
 }
+
 
 // Vérifie si le fichier est une image valide
 function fileIsImage(name) {

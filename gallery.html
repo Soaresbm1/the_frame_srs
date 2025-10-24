@@ -1,117 +1,86 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Galerie – The_frame_srs</title>
-  <meta name="description" content="Galerie photo classée par club et par équipe – Football & Futsal – The_frame_srs." />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Galerie – The Frame SRS</title>
   <link rel="stylesheet" href="style.css" />
+  <script defer src="script.js"></script>
 </head>
 <body>
   <header class="site-header">
-    <a class="brand" href="index.html">The_frame_srs</a>
-    <nav class="nav">
-      <a href="gallery.html" aria-current="page">Galerie</a>
-      <a href="index.html#licence">Licence</a>
-      <a href="index.html#contact">Contact</a>
+    <img src="img/logo.jpg" alt="Logo The Frame SRS" class="logo" />
+    <h1>The Frame SRS</h1>
+    <nav>
+      <a href="index.html">Accueil</a>
+      <a href="gallery.html" class="active">Galerie</a>
     </nav>
   </header>
 
-  <main class="gallery-page">
-    <h1>Galerie par Club & Équipe</h1>
+  <main class="gallery-layout">
+    <!-- FILTRES À GAUCHE -->
+    <aside class="filters">
+      <button class="accordion">Filtres</button>
+      <div class="panel">
+        <label for="club-select">🏟️ Club</label>
+        <select id="club-select">
+          <option value="all">Tous les clubs</option>
+          <option value="FC Le Parc">FC Le Parc</option>
+          <option value="FC La Chaux-de-Fonds">FC La Chaux-de-Fonds</option>
+        </select>
 
-    <form class="filters" id="filters" aria-label="Filtres de la galerie">
-      <input type="search" id="search" placeholder="Rechercher (joueur, lieu, compétition…)" aria-label="Rechercher" />
-
-      <div class="filter-row">
-        <label class="select">
-          <span>Club</span>
-          <select id="clubSelect">
-            <option value="*">Tous les clubs</option>
-          </select>
-        </label>
-
-        <label class="select">
-          <span>Équipe</span>
-          <select id="teamSelect" disabled>
-            <option value="*">Toutes les équipes</option>
-          </select>
-        </label>
-
-        <div class="chips" role="group" aria-label="Discipline">
-          <button type="button" class="chip is-active" data-filter="*">Tout</button>
-          <button type="button" class="chip" data-filter="football">Football</button>
-          <button type="button" class="chip" data-filter="futsal">Futsal</button>
-        </div>
+        <label for="team-select">⚽ Équipe</label>
+        <select id="team-select">
+          <option value="all">Toutes les équipes</option>
+          <optgroup label="FC Le Parc">
+            <option value="Inter A">Inter A</option>
+            <option value="Juniors B">Juniors B</option>
+            <option value="2ème Futsal">2ème Futsal</option>
+          </optgroup>
+          <optgroup label="FC La Chaux-de-Fonds">
+            <option value="Inter A">Inter A</option>
+            <option value="Juniors B">Juniors B</option>
+          </optgroup>
+        </select>
       </div>
-    </form>
+    </aside>
 
-    <section id="grid" class="grid" aria-live="polite">
+    <!-- GALERIE DE PHOTOS -->
+    <section class="gallery-grid" id="gallery">
+      <!-- Exemple de photo FC Le Parc Inter A -->
+      <figure class="card photo"
+              data-club="FC Le Parc"
+              data-team="Inter A"
+              data-sport="football">
+        <img src="thumbs/FC_Le_Parc/Inter_A/match1.jpg" alt="FC Le Parc Inter A – match 1" loading="lazy" />
+        <figcaption>
+          <div>
+            <strong>FC Le Parc – Inter A</strong>
+            <small>Match amical • 2025</small>
+          </div>
+          <a class="btn btn--sm" href="full/FC_Le_Parc/Inter_A/match1.jpg" download>Télécharger</a>
+        </figcaption>
+      </figure>
 
-      <!-- FC Le Parc – Inter A -->
-<figure class="card photo"
-data-club="FC Le Parc"
-data-team="Inter A"
-data-sport="football">
-<img src="thumbs/FC_Le_Parc/Inter_A/match1.jpg" alt="FC Le Parc Inter A – match 1" loading="lazy" />
-<figcaption>
-<div>
-<strong>FC Le Parc – Inter A</strong>
-<small>Match amical • 2025</small>
-</div>
-<a class="btn btn--sm" href="full/FC_Le_Parc/Inter_A/match1.jpg" download>Télécharger</a>
-</figcaption>
-</figure>
-
-<!-- FC Le Parc – 2ème Futsal -->
-<figure class="card photo"
-data-club="FC Le Parc"
-data-team="2ème Futsal"
-data-sport="futsal">
-<img src="thumbs/FC_Le_Parc/2eme_Futsal/tournoi1.jpg" alt="FC Le Parc 2ème Futsal – tournoi 1" loading="lazy" />
-<figcaption>
-<div>
-<strong>FC Le Parc – 2ème Futsal</strong>
-<small>Tournoi Futsal • 2025</small>
-</div>
-<a class="btn btn--sm" href="full/FC_Le_Parc/2eme_Futsal/tournoi1.jpg" download>Télécharger</a>
-</figcaption>
-</figure>
-
-<!-- FC La Chaux-de-Fonds – Juniors B -->
-<figure class="card photo"
-data-club="FC La Chaux-de-Fonds"
-data-team="Juniors B"
-data-sport="football">
-<img src="thumbs/FC_La_Chaux_de_Fonds/Juniors_B/match2.jpg" alt="FC La Chaux-de-Fonds Juniors B – match 2" loading="lazy" />
-<figcaption>
-<div>
-<strong>FC La Chaux-de-Fonds – Juniors B</strong>
-<small>Championnat • 2025</small>
-</div>
-<a class="btn btn--sm" href="full/FC_La_Chaux_de_Fonds/Juniors_B/match2.jpg" download>Télécharger</a>
-</figcaption>
-</figure>
-
-
+      <!-- Exemple de photo FC La Chaux-de-Fonds Juniors B -->
+      <figure class="card photo"
+              data-club="FC La Chaux-de-Fonds"
+              data-team="Juniors B"
+              data-sport="football">
+        <img src="thumbs/FC_La_Chaux_de_Fonds/Juniors_B/match1.jpg" alt="FC La Chaux-de-Fonds Juniors B – match 1" loading="lazy" />
+        <figcaption>
+          <div>
+            <strong>FC La Chaux-de-Fonds – Juniors B</strong>
+            <small>Championnat • 2025</small>
+          </div>
+          <a class="btn btn--sm" href="full/FC_La_Chaux_de_Fonds/Juniors_B/match1.jpg" download>Télécharger</a>
+        </figcaption>
+      </figure>
     </section>
   </main>
 
-  <dialog id="lightbox" class="lightbox" aria-label="Agrandir la photo">
-    <button class="lightbox__close" data-close>&times;</button>
-    <img id="lightboxImage" alt="" />
-    <div class="lightbox__actions">
-      <a id="lightboxDownload" class="btn" href="#" download>Télécharger l’original</a>
-    </div>
-  </dialog>
-
   <footer class="site-footer">
-    <small>© <span id="year"></span> The_frame_srs</small>
+    <small>© <span id="year"></span> The Frame SRS – Football & Futsal</small>
   </footer>
-
-  <script src="script.js" defer></script>
-  <script>
-    document.getElementById('year').textContent = new Date().getFullYear();
-  </script>
 </body>
 </html>

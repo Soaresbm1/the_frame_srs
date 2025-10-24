@@ -1,6 +1,6 @@
 // === CONFIG GITHUB ===
 const GH_OWNER = "Soaresbm1"; // ton pseudo GitHub
-const GH_REPO = "the_frame_srs"; // nom de ton dépôt
+const GH_REPO = "the_frame_srs"; // nom du dépôt
 const GH_BRANCH = "main"; // branche
 
 // === ACCORDÉON ===
@@ -50,9 +50,7 @@ async function listGithubFiles(path) {
   const res = await fetch(url);
   console.log("   ↳ status:", res.status, res.statusText);
 
-  if (!res.ok) {
-    return [];
-  }
+  if (!res.ok) return [];
 
   const data = await res.json();
   const files = Array.isArray(data)
@@ -81,11 +79,10 @@ function makeCard({ club, team, filename }) {
   return figure;
 }
 
-// === FILTRAGE ===
+// === FILTRAGE DÉROULANTS ===
 function filterGallery() {
   const club = clubSelect.value;
   const team = teamSelect.value;
-
   document.querySelectorAll('.photo').forEach(photo => {
     const matchesClub = club === 'all' || photo.dataset.club === club;
     const matchesTeam = team === 'all' || photo.dataset.team === team;
@@ -94,8 +91,8 @@ function filterGallery() {
 }
 
 function setupFilters() {
-  clubSelect.addEventListener('change', filterGallery);
-  teamSelect.addEventListener('change', filterGallery);
+  if (clubSelect) clubSelect.addEventListener('change', filterGallery);
+  if (teamSelect) teamSelect.addEventListener('change', filterGallery);
 }
 
 // === CHARGEMENT PRINCIPAL ===
@@ -137,8 +134,25 @@ async function loadGallery() {
   setupFilters();
 }
 
+// === BOUTONS CLUBS ===
+const clubButtons = document.querySelectorAll('.club-btn');
+
+clubButtons.forEach(btn => {
+  btn.addEventListener('click', () => {
+    clubButtons.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    const club = btn.dataset.club;
+
+    document.querySelectorAll('.photo').forEach(photo => {
+      const matchesClub = club === 'all' || photo.dataset.club === club;
+      photo.style.display = matchesClub ? 'block' : 'none';
+    });
+  });
+});
+
 // === LANCEMENT ===
 loadGallery();
 
-// === ANNÉE DANS LE FOOTER ===
+// === ANNÉE FOOTER ===
 document.getElementById('year').textContent = new Date().getFullYear();

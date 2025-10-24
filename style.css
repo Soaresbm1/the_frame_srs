@@ -340,6 +340,37 @@ a:hover {
   border-color: #b7a46a;
 }
 
+/* === Boutons clubs === */
+.club-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: flex-start;
+  margin-top: 1rem;
+  padding-top: 0.8rem;
+  border-top: 1px solid #c0b28a;
+}
+
+.club-btn {
+  background: #eae2cf;
+  border: 1px solid #c0b28a;
+  border-radius: 6px;
+  padding: 0.4rem 0.9rem;
+  font-family: 'Georgia', serif;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.club-btn:hover {
+  background: #d6c8a6;
+}
+
+.club-btn.active {
+  background: #b7a46a;
+  color: white;
+  border-color: #b7a46a;
+}
+
 
 .card img {
   width: 100%;

@@ -52,19 +52,6 @@ h1{ margin:0 0 8px; font-size:2rem; letter-spacing:2px; }
 .btn:hover{ background:var(--accent-2); }
 .btn--ghost{ background:transparent; }
 
-/* ========== CARTES (Licence / Contact) ========== */
-.card{
-  max-width:760px; margin:36px auto; border:2px solid var(--line-soft);
-  background:var(--paper); padding:20px; border-radius:8px;
-}
-.card h2{
-  margin:0 0 10px; font-size:1.25rem; border-bottom:1px solid var(--line-soft); padding-bottom:6px;
-}
-.card ul{ list-style:none; margin:0; padding:0; }
-.card li{ margin:6px 0; }
-.contact-list a{ color:var(--ink); text-decoration:none; }
-.contact-list a:hover{ text-decoration:underline; }
-
 /* ========== LAYOUT GALERIE ========== */
 .gallery-layout{
   display:flex; align-items:flex-start; gap:28px; padding:22px; max-width:1300px; margin:auto;
@@ -86,6 +73,7 @@ h1{ margin:0 0 8px; font-size:2rem; letter-spacing:2px; }
 .panel select{
   width:100%; padding:8px 10px; border:1px solid #aaa; border-radius:8px; background:#fff; margin-top:6px;
 }
+#match-select:disabled { opacity:.6; cursor:not-allowed; }
 
 /* Grille d’images */
 .gallery-grid{
@@ -108,6 +96,18 @@ figcaption{ padding:10px 12px; text-align:center; font-size:.95rem; }
 }
 .btn-sm:hover{ background:var(--accent-2); }
 
+/* Boîte info compteur */
+.gallery-info {
+  grid-column:1 / -1;
+  margin-top:16px;
+  padding:12px;
+  border:1px solid var(--line-soft);
+  border-radius:8px;
+  background:var(--paper);
+  text-align:center;
+  font-size:0.95rem;
+}
+
 /* ========== FOOTER ========== */
 .site-footer{
   text-align:center; padding:16px 10px; border-top:2px solid var(--line); margin-top:28px;
@@ -115,7 +115,6 @@ figcaption{ padding:10px 12px; text-align:center; font-size:.95rem; }
 
 /* ========== RESPONSIVE ========== */
 @media (max-width: 800px){
-  .site-header{ flex-wrap:wrap; row-gap:8px; }
   .gallery-layout{ flex-direction:column; }
   .filters{ width:100%; position:static; }
   .panel{ border-left:none; border-top:3px solid var(--line); }

@@ -1,5 +1,5 @@
 /**********************
- *  CONFIG GITHUB
+ *  CONFIG REPO
  **********************/
 const GH_OWNER  = "Soaresbm1";
 const GH_REPO   = "the_frame_srs";
@@ -8,12 +8,12 @@ const GH_BRANCH = "main";
 /**********************
  *  ACCORDÉON FILTRES
  **********************/
-const acc = document.querySelector('.accordion');
-const panel = document.querySelector('.panel');
+const acc = document.querySelector(".accordion");
+const panel = document.querySelector(".panel");
 if (acc && panel) {
-  acc.addEventListener('click', () => {
-    acc.classList.toggle('active');
-    panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
+  acc.addEventListener("click", () => {
+    acc.classList.toggle("active");
+    panel.style.display = panel.style.display === "block" ? "none" : "block";
   });
 }
 
@@ -22,15 +22,16 @@ if (acc && panel) {
  **********************/
 const STRUCTURE = {
   "FC Le Parc": ["Inter A", "Juniors B", "2ème Futsal"],
-  "FC La Chaux-de-Fonds": ["Inter A", "Juniors B"]
+  "FC La Chaux-de-Fonds": ["Inter A", "Juniors B"],
 };
 
 /**********************
  *  SÉLECTEURS
  **********************/
-const clubSelect = document.getElementById('club-select');
-const teamSelect = document.getElementById('team-select');
-const galleryEl  = document.getElementById('gallery');
+const clubSelect  = document.getElementById("club-select");
+const teamSelect  = document.getElementById("team-select");
+const matchSelect = document.getElementById("match-select");
+const galleryEl   = document.getElementById("gallery");
 
 /**********************
  *  OUTILS
@@ -48,25 +49,55 @@ function slugifyPath(text) {
     .replaceAll("ô", "o")
     .replaceAll("ï", "i");
 }
-
 function isImage(name) {
   return /\.(jpe?g|png|webp)$/i.test(name);
 }
 
-async function githubList(path) {
-  const url = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${path}?ref=${GH_BRANCH}`;
+/* ------- Listing via jsDelivr flat API ------- */
+let __JSD_FILES = null;
+async function fetchAllFilesOnce() {
+  if (__JSD_FILES) return __JSD_FILES;
+  const url = `https://data.jsdelivr.com/v1/package/gh/${GH_OWNER}/${GH_REPO}@${GH_BRANCH}/flat`;
   const res = await fetch(url);
-  if (!res.ok) return [];
+  if (!res.ok) {
+    console.error("jsDelivr listing failed", res.status, await res.text());
+    return (__JSD_FILES = []);
+  }
   const data = await res.json();
-  return Array.isArray(data) ? data : [];
+  __JSD_FILES = (data.files || []).map((f) => f.name);
+  return __JSD_FILES;
+}
+async function listImagesUnder(prefix) {
+  const files = await fetchAllFilesOnce();
+  const clean = prefix.replace(/^\/+/, "");
+  return files
+    .filter((p) => p.startsWith(clean + "/"))
+    .filter((p) => isImage(p.split("/").pop()))
+    .map((p) => ({
+      name: p.split("/").pop(),
+      path: p,
+      cdn: `https://cdn.jsdelivr.net/gh/${GH_OWNER}/${GH_REPO}@${GH_BRANCH}/${p}`,
+    }));
+}
+async function listMatches(club, team) {
+  const files = await fetchAllFilesOnce();
+  const prefix = `full/${slugifyPath(club)}/${slugifyPath(team)}/`;
+  const set = new Set();
+  files.forEach((p) => {
+    if (p.startsWith(prefix)) {
+      const parts = p.slice(prefix.length).split("/");
+      if (parts.length > 1 && parts[0]) set.add(parts[0]);
+    }
+  });
+  return Array.from(set).sort((a, b) => b.localeCompare(a, undefined, { numeric: true }));
 }
 
 /**********************
- *  UI BUILDERS
+ *  UI
  **********************/
-function makeCard({ club, team, filename, rawUrl }) {
-  const fig = document.createElement('figure');
-  fig.className = 'card photo';
+function makeCard({ club, team, rawUrl }) {
+  const fig = document.createElement("figure");
+  fig.className = "card photo";
   fig.dataset.club = club;
   fig.dataset.team = team;
   fig.innerHTML = `
@@ -78,83 +109,119 @@ function makeCard({ club, team, filename, rawUrl }) {
   `;
   return fig;
 }
+function attachInfoBox(total) {
+  const old = document.querySelector(".gallery-info");
+  if (old) old.remove();
+  const infoBox = document.createElement("div");
+  infoBox.className = "gallery-info";
+  const date = new Date();
+  infoBox.innerHTML = `
+    <p>📸 <strong id="photoCount">${total}</strong> photos affichées</p>
+    <p>🕓 Dernière mise à jour : <strong>${date.toLocaleDateString("fr-FR")}</strong></p>
+  `;
+  galleryEl.parentElement.appendChild(infoBox);
+}
 
 /**********************
  *  CHARGEMENT GALERIE
  **********************/
-async function loadGallery() {
+async function renderGallery() {
   galleryEl.innerHTML = "";
-  let allPhotos = [];
+  let all = [];
 
-  // 1️⃣ Récupère toutes les images
-  for (const club of Object.keys(STRUCTURE)) {
-    for (const team of STRUCTURE[club]) {
-      const clubPath = slugifyPath(club);
-      const teamPath = slugifyPath(team);
-      const folder = `full/${clubPath}/${teamPath}`;
+  const club  = clubSelect.value;
+  const team  = teamSelect.value;
+  const match = matchSelect.value;
 
-      const files = await githubList(folder);
-      const images = files.filter(f => f.type === 'file' && isImage(f.name));
+  if (club === "all" && team === "all" && match === "all") {
+    const fav = await listImagesUnder("full/favorites");
+    fav.forEach((img) =>
+      all.push({ club: "Favoris", team: "", filename: img.name, rawUrl: img.cdn })
+    );
+  } else {
+    const roots = [];
+    if (club !== "all" && team !== "all") {
+      if (match !== "all") roots.push(`full/${slugifyPath(club)}/${slugifyPath(team)}/${match}`);
+      else roots.push(`full/${slugifyPath(club)}/${slugifyPath(team)}`);
+    } else if (club !== "all" && team === "all") {
+      (STRUCTURE[club] || []).forEach((t) =>
+        roots.push(`full/${slugifyPath(club)}/${slugifyPath(t)}`)
+      );
+    } else if (club === "all" && team !== "all") {
+      Object.keys(STRUCTURE).forEach((c) => {
+        if (STRUCTURE[c].includes(team)) roots.push(`full/${slugifyPath(c)}/${slugifyPath(team)}`);
+      });
+    }
 
-      images.forEach(img => {
-        const raw = `https://raw.githubusercontent.com/${GH_OWNER}/${GH_REPO}/${GH_BRANCH}/${folder}/${img.name}`;
-        allPhotos.push({
-          club,
-          team,
-          filename: img.name,
-          rawUrl: raw
-        });
+    for (const root of roots) {
+      const imgs = await listImagesUnder(root);
+      imgs.forEach((img) => {
+        let inferredClub = "Club";
+        let inferredTeam = "Équipe";
+        const parts = img.path.split("/");
+        if (parts.length >= 4) {
+          inferredClub = parts[1].replaceAll("_", " ");
+          inferredTeam = parts[2].replaceAll("_", " ");
+        }
+        all.push({ club: inferredClub, team: inferredTeam, filename: img.name, rawUrl: img.cdn });
       });
     }
   }
 
-  // 2️⃣ Trie par nom de fichier décroissant (les nouvelles en haut)
-  allPhotos.sort((a, b) => b.filename.localeCompare(a.filename, undefined, { numeric: true }));
+  all.sort((a, b) => b.filename.localeCompare(a.filename, undefined, { numeric: true }));
+  all.forEach((p) => galleryEl.appendChild(makeCard(p)));
+  attachInfoBox(all.length);
 
-  // 3️⃣ Affiche les photos triées
-  allPhotos.forEach(photo => {
-    galleryEl.appendChild(makeCard(photo));
-  });
-
-  // 4️⃣ Message si aucune photo
-  if (allPhotos.length === 0) {
+  if (all.length === 0) {
     galleryEl.innerHTML = `
       <div style="grid-column:1/-1; padding:1rem; border:1px dashed #c0b28a; border-radius:8px; background:#fff;">
-        Aucune image détectée.<br>
-        Vérifie que tes photos sont bien <strong>commitées/pushées sur GitHub</strong>
-        dans <code>full/&lt;Club&gt;/&lt;Équipe&gt;</code>.<br>
-        Puis recharge la page (Ctrl+F5).
+        Aucune image détectée pour ce filtre.<br>
+        Vérifie tes dossiers ou retire un filtre.
       </div>`;
   }
-
-  setupFilters();
 }
 
 /**********************
- *  FILTRES
+ *  MISE À JOUR LISTE MATCHS
+ **********************/
+async function refreshMatchOptions() {
+  const club = clubSelect.value;
+  const team = teamSelect.value;
+  matchSelect.innerHTML = `<option value="all">Tous les matchs</option>`;
+  matchSelect.disabled = true;
+  if (club !== "all" && team !== "all") {
+    const matches = await listMatches(club, team);
+    matches.forEach((m) => {
+      const opt = document.createElement("option");
+      opt.value = m;
+      opt.textContent = m.replaceAll("_", " ");
+      matchSelect.appendChild(opt);
+    });
+    matchSelect.disabled = false;
+  }
+}
+
+/**********************
+ *  INIT
  **********************/
 function setupFilters() {
-  if (clubSelect) clubSelect.addEventListener('change', filterGallery);
-  if (teamSelect) teamSelect.addEventListener('change', filterGallery);
-  filterGallery(); // premier affichage
-}
-
-function filterGallery() {
-  const club = clubSelect ? clubSelect.value : 'all';
-  const team = teamSelect ? teamSelect.value : 'all';
-
-  document.querySelectorAll('.photo').forEach(photo => {
-    const okClub = (club === 'all' || photo.dataset.club === club);
-    const okTeam = (team === 'all' || photo.dataset.team === team);
-    photo.style.display = (okClub && okTeam) ? 'block' : 'none';
+  clubSelect.addEventListener("change", async () => {
+    await refreshMatchOptions();
+    renderGallery();
   });
+  teamSelect.addEventListener("change", async () => {
+    await refreshMatchOptions();
+    renderGallery();
+  });
+  matchSelect.addEventListener("change", renderGallery);
 }
 
-/**********************
- *  LANCEMENT
- **********************/
-loadGallery();
+async function init() {
+  await fetchAllFilesOnce();
+  await refreshMatchOptions();
+  await renderGallery();
+}
+init();
 
-// Année footer
-const y = document.getElementById('year');
+const y = document.getElementById("year");
 if (y) y.textContent = new Date().getFullYear();

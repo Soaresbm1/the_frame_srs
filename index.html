@@ -14,6 +14,7 @@
       <a href="gallery.html">Galerie</a>
       <a href="#licence">Licence</a>
       <a href="#contact">Contact</a>
+      <button id="theme-toggle" class="theme-toggle" aria-label="Basculer le thème">🌙</button>
     </nav>
   </header>
 
@@ -59,7 +60,19 @@
   </footer>
 
   <script>
+    // année
     document.getElementById('year').textContent = new Date().getFullYear();
+
+    // thème (même logique que gallery)
+    const themeKey = 'tfs_theme';
+    const saved = localStorage.getItem(themeKey);
+    if (saved === 'dark') document.body.classList.add('dark');
+    document.getElementById('theme-toggle').textContent = document.body.classList.contains('dark') ? '☀️' : '🌙';
+    document.getElementById('theme-toggle').addEventListener('click', () => {
+      document.body.classList.toggle('dark');
+      localStorage.setItem(themeKey, document.body.classList.contains('dark') ? 'dark' : 'light');
+      document.getElementById('theme-toggle').textContent = document.body.classList.contains('dark') ? '☀️' : '🌙';
+    });
   </script>
 </body>
 </html>

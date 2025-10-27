@@ -28,27 +28,9 @@ const STRUCTURE = {
 /**********************
  *  SÉLECTEURS
  **********************/
-const clubSelect   = document.getElementById('club-select');
-const teamSelect   = document.getElementById('team-select');
-const galleryEl    = document.getElementById('gallery');
-const statsEl      = document.getElementById('gallery-stats');
-const refreshBtn   = document.getElementById('refresh-cache');
-const themeBtn     = document.getElementById('theme-toggle');
-
-/**********************
- *  THEME (persisté)
- **********************/
-const THEME_KEY = 'tfs_theme';
-const savedTheme = localStorage.getItem(THEME_KEY);
-if (savedTheme === 'dark') document.body.classList.add('dark');
-if (themeBtn) {
-  themeBtn.textContent = document.body.classList.contains('dark') ? '☀️' : '🌙';
-  themeBtn.addEventListener('click', () => {
-    document.body.classList.toggle('dark');
-    localStorage.setItem(THEME_KEY, document.body.classList.contains('dark') ? 'dark' : 'light');
-    themeBtn.textContent = document.body.classList.contains('dark') ? '☀️' : '🌙';
-  });
-}
+const clubSelect = document.getElementById('club-select');
+const teamSelect = document.getElementById('team-select');
+const galleryEl  = document.getElementById('gallery');
 
 /**********************
  *  OUTILS
@@ -80,32 +62,9 @@ async function githubList(path) {
 }
 
 /**********************
- *  CACHE INTELLIGENT
- **********************/
-const CACHE_KEY = 'tfs_gallery_cache_v1';
-const CACHE_TTL_MS = 6 * 60 * 60 * 1000; // 6 heures
-
-function readCache() {
-  try {
-    const raw = localStorage.getItem(CACHE_KEY);
-    if (!raw) return null;
-    const parsed = JSON.parse(raw);
-    if (!parsed || !parsed.savedAt || !parsed.items) return null;
-    const age = Date.now() - parsed.savedAt;
-    if (age > CACHE_TTL_MS) return null;
-    return parsed;
-  } catch { return null; }
-}
-
-function writeCache(items) {
-  const payload = { savedAt: Date.now(), items };
-  localStorage.setItem(CACHE_KEY, JSON.stringify(payload));
-}
-
-/**********************
  *  UI BUILDERS
  **********************/
-function makeCard({ club, team, rawUrl }) {
+function makeCard({ club, team, filename, rawUrl }) {
   const fig = document.createElement('figure');
   fig.className = 'card photo';
   fig.dataset.club = club;
@@ -121,71 +80,41 @@ function makeCard({ club, team, rawUrl }) {
 }
 
 /**********************
- *  CHARGEMENT (avec cache)
+ *  CHARGEMENT GALERIE
  **********************/
-async function fetchAllPhotos() {
-  const items = [];
+async function loadGallery() {
+  galleryEl.innerHTML = "";
+  let total = 0;
+
   for (const club of Object.keys(STRUCTURE)) {
     for (const team of STRUCTURE[club]) {
+
       const clubPath = slugifyPath(club);
       const teamPath = slugifyPath(team);
       const folder = `full/${clubPath}/${teamPath}`;
+
       const files = await githubList(folder);
       const images = files.filter(f => f.type === 'file' && isImage(f.name));
+
       images.forEach(img => {
         const raw = `https://raw.githubusercontent.com/${GH_OWNER}/${GH_REPO}/${GH_BRANCH}/${folder}/${img.name}`;
-        items.push({ club, team, url: raw });
+        galleryEl.appendChild(makeCard({ club, team, filename: img.name, rawUrl: raw }));
+        total++;
       });
     }
   }
-  return items;
-}
 
-async function loadGallery() {
-  galleryEl.innerHTML = "";
-
-  // 1) essaie le cache
-  let cache = readCache();
-  let items;
-  if (cache) {
-    items = cache.items;
-    updateStats(items.length, cache.savedAt, true);
-  } else {
-    // 2) sinon fetch puis écris le cache
-    items = await fetchAllPhotos();
-    writeCache(items);
-    updateStats(items.length, Date.now(), false);
+  if (total === 0) {
+    galleryEl.innerHTML = `
+      <div style="grid-column:1/-1; padding:1rem; border:1px dashed #c0b28a; border-radius:8px; background:#fff;">
+        Aucune image détectée.<br>
+        Vérifie que tes photos sont bien <strong>commitées/pushées sur GitHub</strong>
+        dans <code>full/&lt;Club&gt;/&lt;Équipe&gt;</code>.<br>
+        Puis recharge la page (Ctrl+F5).
+      </div>`;
   }
 
-  // 3) build DOM
-  items.forEach(item => {
-    const card = makeCard({ club: item.club, team: item.team, rawUrl: item.url });
-    galleryEl.appendChild(card);
-  });
-
   setupFilters();
-}
-
-/**********************
- *  STATS
- **********************/
-function fmtDate(ts){
-  const d = new Date(ts);
-  return d.toLocaleString('fr-CH', { dateStyle:'medium', timeStyle:'short' });
-}
-
-function updateStats(count, savedAt, fromCache){
-  if (!statsEl) return;
-  const badge = fromCache ? 'cache' : 'réseau';
-  statsEl.textContent = `Photos: ${count} • Source: ${badge} • Dernière mise à jour: ${fmtDate(savedAt)}`;
-}
-
-if (refreshBtn) {
-  refreshBtn.addEventListener('click', async () => {
-    localStorage.removeItem(CACHE_KEY);
-    statsEl.textContent = 'Actualisation…';
-    await loadGallery();
-  });
 }
 
 /**********************
@@ -213,6 +142,6 @@ function filterGallery() {
  **********************/
 loadGallery();
 
-// Année footer si présent
+// Année footer
 const y = document.getElementById('year');
 if (y) y.textContent = new Date().getFullYear();

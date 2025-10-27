@@ -96,11 +96,12 @@ async function loadGallery() {
       const files = await githubList(folder);
       const images = files.filter(f => f.type === 'file' && isImage(f.name));
 
-      images.forEach(img => {
+      images.reverse().forEach(img => {
         const raw = `https://raw.githubusercontent.com/${GH_OWNER}/${GH_REPO}/${GH_BRANCH}/${folder}/${img.name}`;
-        galleryEl.appendChild(makeCard({ club, team, filename: img.name, rawUrl: raw }));
+        galleryEl.prepend(makeCard({ club, team, filename: img.name, rawUrl: raw }));
         total++;
-      });
+    });
+
     }
   }
 

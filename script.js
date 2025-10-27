@@ -84,11 +84,11 @@ function makeCard({ club, team, filename, rawUrl }) {
  **********************/
 async function loadGallery() {
   galleryEl.innerHTML = "";
-  let total = 0;
+  let allPhotos = [];
 
+  // 1️⃣ Récupère toutes les images
   for (const club of Object.keys(STRUCTURE)) {
     for (const team of STRUCTURE[club]) {
-
       const clubPath = slugifyPath(club);
       const teamPath = slugifyPath(team);
       const folder = `full/${clubPath}/${teamPath}`;
@@ -96,16 +96,28 @@ async function loadGallery() {
       const files = await githubList(folder);
       const images = files.filter(f => f.type === 'file' && isImage(f.name));
 
-      images.reverse().forEach(img => {
+      images.forEach(img => {
         const raw = `https://raw.githubusercontent.com/${GH_OWNER}/${GH_REPO}/${GH_BRANCH}/${folder}/${img.name}`;
-        galleryEl.prepend(makeCard({ club, team, filename: img.name, rawUrl: raw }));
-        total++;
-    });
-
+        allPhotos.push({
+          club,
+          team,
+          filename: img.name,
+          rawUrl: raw
+        });
+      });
     }
   }
 
-  if (total === 0) {
+  // 2️⃣ Trie par nom de fichier décroissant (les nouvelles en haut)
+  allPhotos.sort((a, b) => b.filename.localeCompare(a.filename, undefined, { numeric: true }));
+
+  // 3️⃣ Affiche les photos triées
+  allPhotos.forEach(photo => {
+    galleryEl.appendChild(makeCard(photo));
+  });
+
+  // 4️⃣ Message si aucune photo
+  if (allPhotos.length === 0) {
     galleryEl.innerHTML = `
       <div style="grid-column:1/-1; padding:1rem; border:1px dashed #c0b28a; border-radius:8px; background:#fff;">
         Aucune image détectée.<br>

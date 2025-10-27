@@ -85,7 +85,6 @@ function makeCard({ club, team, filename, rawUrl }) {
 async function loadGallery() {
   galleryEl.innerHTML = "";
   let allPhotos = [];
-  let latestUpdate = null;
 
   // 1️⃣ Récupère toutes les images
   for (const club of Object.keys(STRUCTURE)) {
@@ -103,14 +102,13 @@ async function loadGallery() {
           club,
           team,
           filename: img.name,
-          rawUrl: raw,
-          date: img.git_url || img.download_url // approximation
+          rawUrl: raw
         });
       });
     }
   }
 
-  // 2️⃣ Trie par nom (les plus récentes en haut)
+  // 2️⃣ Trie par nom de fichier décroissant (les nouvelles en haut)
   allPhotos.sort((a, b) => b.filename.localeCompare(a.filename, undefined, { numeric: true }));
 
   // 3️⃣ Affiche les photos triées
@@ -118,17 +116,8 @@ async function loadGallery() {
     galleryEl.appendChild(makeCard(photo));
   });
 
-  // 4️⃣ Ajoute le compteur + dernière mise à jour
-  if (allPhotos.length > 0) {
-    const infoBox = document.createElement('div');
-    infoBox.className = 'gallery-info';
-    const date = new Date();
-    infoBox.innerHTML = `
-      <p>📸 <strong>${allPhotos.length}</strong> photos affichées</p>
-      <p>🕓 Dernière mise à jour : <strong>${date.toLocaleDateString('fr-FR')}</strong></p>
-    `;
-    galleryEl.parentElement.appendChild(infoBox);
-  } else {
+  // 4️⃣ Message si aucune photo
+  if (allPhotos.length === 0) {
     galleryEl.innerHTML = `
       <div style="grid-column:1/-1; padding:1rem; border:1px dashed #c0b28a; border-radius:8px; background:#fff;">
         Aucune image détectée.<br>
@@ -153,21 +142,12 @@ function setupFilters() {
 function filterGallery() {
   const club = clubSelect ? clubSelect.value : 'all';
   const team = teamSelect ? teamSelect.value : 'all';
-  let visibleCount = 0;
 
   document.querySelectorAll('.photo').forEach(photo => {
     const okClub = (club === 'all' || photo.dataset.club === club);
     const okTeam = (team === 'all' || photo.dataset.team === team);
-    const visible = (okClub && okTeam);
-    photo.style.display = visible ? 'block' : 'none';
-    if (visible) visibleCount++;
+    photo.style.display = (okClub && okTeam) ? 'block' : 'none';
   });
-
-  // 🔢 Met à jour le compteur selon les filtres
-  const infoBox = document.querySelector('.gallery-info');
-  if (infoBox) {
-    infoBox.querySelector('strong').textContent = visibleCount;
-  }
 }
 
 /**********************

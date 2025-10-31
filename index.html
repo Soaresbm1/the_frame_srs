@@ -12,13 +12,14 @@
     <a class="brand" href="index.html" aria-current="page">The_frame_srs</a>
     <nav class="nav">
       <a href="gallery.html">Galerie</a>
+      <a href="#video">Vidéo</a>
       <a href="#licence">Licence</a>
       <a href="#contact">Contact</a>
     </nav>
   </header>
 
   <main>
-    <!-- Section principale sans logo -->
+    <!-- HERO -->
     <section class="hero">
       <div class="frame frame--double">
         <h1>THE_FRAME_SRS</h1>
@@ -27,6 +28,56 @@
           <a class="btn" href="gallery.html">Voir la galerie</a>
           <a class="btn btn--ghost" href="#licence">Licence</a>
         </div>
+      </div>
+    </section>
+
+    <!-- VIDÉO EXPLICATIVE -->
+    <section id="video" class="card">
+      <div class="frame">
+        <h2>Vidéo explicative — comment utiliser le site</h2>
+
+        <!-- OPTION A : FICHIER LOCAL (recommandé si ≤ ~100 Mo)
+             Place la vidéo ici :  video/explain.mp4
+             (facultatif) Ajoute une image d’aperçu : img/posters/explain.jpg
+        -->
+        <figure class="video-card">
+          <video
+            class="video-player"
+            controls
+            preload="metadata"
+            playsinline
+            poster="img/posters/explain.jpg"
+          >
+            <source src="video/explain.mp4" type="video/mp4">
+            <!-- Optionnel : un 2e format -->
+            <!-- <source src="video/explain.webm" type="video/webm"> -->
+            Votre navigateur ne supporte pas la vidéo. 
+            <a href="video/explain.mp4">Télécharger la vidéo</a>.
+          </video>
+          <figcaption class="video-caption">
+            <strong>Comment trouver et télécharger les photos</strong> — vue rapide des filtres
+            (club/équipe), du bouton “Télécharger”, et de la section favoris.
+          </figcaption>
+        </figure>
+
+        <!-- OPTION B : YOUTUBE (décommente ce bloc et commente le bloc vidéo ci-dessus)
+        <figure class="video-card">
+          <div class="video-embed">
+            <iframe
+              src="https://www.youtube-nocookie.com/embed/ID_DE_TA_VIDEO"
+              title="Vidéo explicative — The_frame_srs"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowfullscreen
+              referrerpolicy="strict-origin-when-cross-origin"
+            ></iframe>
+          </div>
+          <figcaption class="video-caption">
+            <strong>Comment trouver et télécharger les photos</strong> — vue rapide des filtres
+            (club/équipe), du bouton “Télécharger”, et de la section favoris.
+          </figcaption>
+        </figure>
+        -->
+
       </div>
     </section>
 

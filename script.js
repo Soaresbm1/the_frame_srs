@@ -37,11 +37,10 @@ const galleryEl  = document.getElementById('gallery');
  **********************/
 function slugifyPath(text) {
   return text
-    .normalize("NFD") // enlève les accents
-    .replace(/[\u0300-\u036f]/g, "") // supprime les marques diacritiques
-    .replace(/[^a-zA-Z0-9]+/g, "_") // remplace espaces et tirets par _
-    .replace(/_+/g, "_") // évite les doubles underscores
-    .replace(/^_|_$/g, ""); // supprime _ au début et à la fin
+    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-zA-Z0-9]+/g, "_")
+    .replace(/_+/g, "_")
+    .replace(/^_|_$/g, "");
 }
 
 function isImage(name) {
@@ -57,7 +56,7 @@ async function githubList(path) {
 }
 
 /**********************
- *  UI BUILDERS
+ *  UI
  **********************/
 function makeCard({ club, team, filename, rawUrl }) {
   const fig = document.createElement('figure');
@@ -81,45 +80,53 @@ async function loadGallery() {
   galleryEl.innerHTML = "";
   let allPhotos = [];
 
-  // 🔁 Boucle sur les clubs et équipes
   for (const club of Object.keys(STRUCTURE)) {
     for (const team of STRUCTURE[club]) {
       const clubPath = slugifyPath(club);
       const teamPath = slugifyPath(team);
-      const folder = `full/${clubPath}/${teamPath}`;
+      const teamFolder = `full/${clubPath}/${teamPath}`;
 
-      const files = await githubList(folder);
-      const images = files.filter(f => f.type === 'file' && isImage(f.name));
+      // Liste le dossier de l'équipe
+      const entries = await githubList(teamFolder);
+      if (!entries.length) continue;
 
-      images.forEach(img => {
-        const raw = `https://raw.githubusercontent.com/${GH_OWNER}/${GH_REPO}/${GH_BRANCH}/${folder}/${img.name}`;
-        allPhotos.push({
-          club,
-          team,
-          filename: img.name,
-          rawUrl: raw
+      // 1) images directement dans le dossier de l'équipe
+      entries
+        .filter(e => e.type === "file" && isImage(e.name))
+        .forEach(img => {
+          const raw = `https://raw.githubusercontent.com/${GH_OWNER}/${GH_REPO}/${GH_BRANCH}/${teamFolder}/${img.name}`;
+          allPhotos.push({ club, team, filename: img.name, rawUrl: raw });
         });
-      });
+
+      // 2) images dans les SOUS-DOSSIERS (matchs)
+      const subdirs = entries.filter(e => e.type === "dir");
+      for (const dir of subdirs) {
+        const matchFolder = `${teamFolder}/${dir.name}`;
+        const files = await githubList(matchFolder);
+        files
+          .filter(f => f.type === "file" && isImage(f.name))
+          .forEach(img => {
+            const raw = `https://raw.githubusercontent.com/${GH_OWNER}/${GH_REPO}/${GH_BRANCH}/${matchFolder}/${img.name}`;
+            allPhotos.push({ club, team, filename: img.name, rawUrl: raw });
+          });
+      }
     }
   }
 
-  // 📸 Trie les photos par nom décroissant (les plus récentes d'abord)
+  // Trie par nom décroissant (les plus récentes d'abord si nom type IMG_1234)
   allPhotos.sort((a, b) => b.filename.localeCompare(a.filename, undefined, { numeric: true }));
 
-  // 🖼️ Ajoute les images dans la galerie
-  allPhotos.forEach(photo => {
-    galleryEl.appendChild(makeCard(photo));
-  });
-
-  // ⚠️ Message si aucune image
+  // Affichage
   if (allPhotos.length === 0) {
     galleryEl.innerHTML = `
       <div style="grid-column:1/-1; padding:1rem; border:1px dashed #c0b28a; border-radius:8px; background:#fff;">
         Aucune image détectée.<br>
         Vérifie que tes photos sont bien <strong>commitées/pushées sur GitHub</strong>
-        dans <code>full/&lt;Club&gt;/&lt;Équipe&gt;</code>.<br>
+        dans <code>full/&lt;Club&gt;/&lt;Équipe&gt;/(éventuellement « Match – AAAA-MM-JJ »)</code>.<br>
         Puis recharge la page (Ctrl+F5).
       </div>`;
+  } else {
+    allPhotos.forEach(p => galleryEl.appendChild(makeCard(p)));
   }
 
   setupFilters();
@@ -131,7 +138,7 @@ async function loadGallery() {
 function setupFilters() {
   if (clubSelect) clubSelect.addEventListener('change', filterGallery);
   if (teamSelect) teamSelect.addEventListener('change', filterGallery);
-  filterGallery(); // premier affichage
+  filterGallery();
 }
 
 function filterGallery() {

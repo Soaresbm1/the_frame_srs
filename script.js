@@ -37,16 +37,11 @@ const galleryEl  = document.getElementById('gallery');
  **********************/
 function slugifyPath(text) {
   return text
-    .trim()
-    .replaceAll(" ", "_")
-    .replaceAll("-", "_")
-    .replaceAll("é", "e")
-    .replaceAll("è", "e")
-    .replaceAll("ê", "e")
-    .replaceAll("à", "a")
-    .replaceAll("ç", "c")
-    .replaceAll("ô", "o")
-    .replaceAll("ï", "i");
+    .normalize("NFD") // enlève les accents
+    .replace(/[\u0300-\u036f]/g, "") // supprime les marques diacritiques
+    .replace(/[^a-zA-Z0-9]+/g, "_") // remplace espaces et tirets par _
+    .replace(/_+/g, "_") // évite les doubles underscores
+    .replace(/^_|_$/g, ""); // supprime _ au début et à la fin
 }
 
 function isImage(name) {
@@ -86,7 +81,7 @@ async function loadGallery() {
   galleryEl.innerHTML = "";
   let allPhotos = [];
 
-  // 1️⃣ Récupère toutes les images
+  // 🔁 Boucle sur les clubs et équipes
   for (const club of Object.keys(STRUCTURE)) {
     for (const team of STRUCTURE[club]) {
       const clubPath = slugifyPath(club);
@@ -108,15 +103,15 @@ async function loadGallery() {
     }
   }
 
-  // 2️⃣ Trie par nom de fichier décroissant (les nouvelles en haut)
+  // 📸 Trie les photos par nom décroissant (les plus récentes d'abord)
   allPhotos.sort((a, b) => b.filename.localeCompare(a.filename, undefined, { numeric: true }));
 
-  // 3️⃣ Affiche les photos triées
+  // 🖼️ Ajoute les images dans la galerie
   allPhotos.forEach(photo => {
     galleryEl.appendChild(makeCard(photo));
   });
 
-  // 4️⃣ Message si aucune photo
+  // ⚠️ Message si aucune image
   if (allPhotos.length === 0) {
     galleryEl.innerHTML = `
       <div style="grid-column:1/-1; padding:1rem; border:1px dashed #c0b28a; border-radius:8px; background:#fff;">

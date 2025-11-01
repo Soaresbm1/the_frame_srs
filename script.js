@@ -4,12 +4,11 @@
 const GH_OWNER  = "Soaresbm1";
 const GH_REPO   = "the_frame_srs";
 const GH_BRANCH = "main";
-const FAVORITES_PATH = "full/favorites";
 
 /**********************
  *  ACCORDÉON FILTRES
  **********************/
-const acc = document.querySelector('.accordion');
+const acc   = document.querySelector('.accordion');
 const panel = document.querySelector('.panel');
 if (acc && panel) {
   acc.addEventListener('click', () => {
@@ -20,6 +19,7 @@ if (acc && panel) {
 
 /**********************
  *  STRUCTURE CLUBS/ÉQUIPES
+ *  (mets ici exactement les libellés que tu utilises dans gallery.html)
  **********************/
 const STRUCTURE = {
   "FC Le Parc": ["Inter A", "Juniors B", "2ème Futsal"],
@@ -38,34 +38,47 @@ const galleryEl  = document.getElementById('gallery');
  **********************/
 function slugifyPath(text) {
   return text
-    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^a-zA-Z0-9]+/g, "_")
-    .replace(/_+/g, "_")
-    .replace(/^_|_$/g, "");
+    .trim()
+    .replaceAll(" ", "_")
+    .replaceAll("-", "_")
+    .replaceAll("é", "e")
+    .replaceAll("è", "e")
+    .replaceAll("ê", "e")
+    .replaceAll("à", "a")
+    .replaceAll("â", "a")
+    .replaceAll("î", "i")
+    .replaceAll("ï", "i")
+    .replaceAll("ô", "o")
+    .replaceAll("ö", "o")
+    .replaceAll("ç", "c");
 }
-function isImage(name) { return /\.(jpe?g|png|webp)$/i.test(name); }
 
+function isImage(name) {
+  return /\.(jpe?g|png|webp)$/i.test(name);
+}
+
+// Liste les fichiers d’un dossier via l’API GitHub
 async function githubList(path) {
   const url = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${path}?ref=${GH_BRANCH}`;
   const res = await fetch(url);
-  if (!res.ok) return [];
+  if (!res.ok) return [];               // 404/403 => on renvoie liste vide
   const data = await res.json();
   return Array.isArray(data) ? data : [];
 }
 
-/**********************
- *  UI
- **********************/
-function makeCard({ club, team, filename, rawUrl, favorite=false }) {
+// Fabrique une carte image
+function makeCard({ club, team, filename, rawUrl, badge }) {
   const fig = document.createElement('figure');
   fig.className = 'card photo';
-  fig.dataset.club = club;
-  fig.dataset.team = team;
-  if (favorite) fig.dataset.favorite = "true";
+  if (club) fig.dataset.club = club;
+  if (team) fig.dataset.team = team;
   fig.innerHTML = `
-    <img src="${rawUrl}" alt="${club} ${team}" loading="lazy">
+    <img src="${rawUrl}" alt="${(club || 'Favorites')} ${(team || '')}" loading="lazy">
     <figcaption>
-      <div><strong>${favorite ? "⭐ Favori" : `${club} – ${team}`}</strong></div>
+      <div>
+        <strong>${club ? `${club} – ${team}` : 'Favoris'}</strong>
+        ${badge ? `<span style="margin-left:.4rem;font-size:.8rem;opacity:.7">${badge}</span>` : ""}
+      </div>
       <a class="btn-sm" href="${rawUrl}" download>Télécharger</a>
     </figcaption>
   `;
@@ -73,126 +86,134 @@ function makeCard({ club, team, filename, rawUrl, favorite=false }) {
 }
 
 /**********************
- *  CHARGEMENT
+ *  CHARGEMENT (FAVORIS + ÉQUIPES)
  **********************/
-async function loadFavorites(intoArray) {
-  const files = await githubList(FAVORITES_PATH);
-  files
-    .filter(f => f.type === "file" && isImage(f.name))
-    .forEach(img => {
-      const raw = `https://raw.githubusercontent.com/${GH_OWNER}/${GH_REPO}/${GH_BRANCH}/${FAVORITES_PATH}/${img.name}`;
-      intoArray.push({
-        club: "__favorites__", // marqueur interne
-        team: "__favorites__",
-        filename: img.name,
-        rawUrl: raw,
-        favorite: true
-      });
-    });
+// Charge le dossier favorites s’il existe
+async function loadFavorites() {
+  const favPath = `full/favorites`;
+  const files = await githubList(favPath);
+  const images = files.filter(f => f.type === 'file' && isImage(f.name));
+  // tri décroissant sur le nom (souvent IMG_0001 → IMG_9999)
+  images.sort((a, b) => b.name.localeCompare(a.name, undefined, { numeric: true }));
+  const cards = images.map(img => {
+    const raw = `https://raw.githubusercontent.com/${GH_OWNER}/${GH_REPO}/${GH_BRANCH}/${favPath}/${img.name}`;
+    return makeCard({ club: null, team: null, filename: img.name, rawUrl: raw, badge: "⭐" });
+  });
+  return cards;
 }
 
-async function loadTeams(intoArray) {
-  for (const club of Object.keys(STRUCTURE)) {
-    for (const team of STRUCTURE[club]) {
-      const clubPath = slugifyPath(club);
-      const teamPath = slugifyPath(team);
-      const teamFolder = `full/${clubPath}/${teamPath}`;
+// Charge un dossier d’équipe
+async function loadTeam(clubLabel, teamLabel) {
+  const clubPath = slugifyPath(clubLabel);
+  const teamPath = slugifyPath(teamLabel);
+  const folder   = `full/${clubPath}/${teamPath}`;
 
-      const entries = await githubList(teamFolder);
-      if (!entries.length) continue;
+  const files  = await githubList(folder);
+  const images = files.filter(f => f.type === 'file' && isImage(f.name));
+  images.sort((a, b) => b.name.localeCompare(a.name, undefined, { numeric: true }));
 
-      // Fichiers directement dans le dossier de l’équipe
-      entries
-        .filter(e => e.type === "file" && isImage(e.name))
-        .forEach(img => {
-          const raw = `https://raw.githubusercontent.com/${GH_OWNER}/${GH_REPO}/${GH_BRANCH}/${teamFolder}/${img.name}`;
-          intoArray.push({ club, team, filename: img.name, rawUrl: raw, favorite:false });
-        });
-
-      // Sous-dossiers (Match – AAAA-MM-JJ)
-      const subdirs = entries.filter(e => e.type === "dir");
-      for (const dir of subdirs) {
-        const matchFolder = `${teamFolder}/${dir.name}`;
-        const files = await githubList(matchFolder);
-        files
-          .filter(f => f.type === "file" && isImage(f.name))
-          .forEach(img => {
-            const raw = `https://raw.githubusercontent.com/${GH_OWNER}/${GH_REPO}/${GH_BRANCH}/${matchFolder}/${img.name}`;
-            intoArray.push({ club, team, filename: img.name, rawUrl: raw, favorite:false });
-          });
-      }
-    }
-  }
+  return images.map(img => {
+    const raw = `https://raw.githubusercontent.com/${GH_OWNER}/${GH_REPO}/${GH_BRANCH}/${folder}/${img.name}`;
+    return makeCard({ club: clubLabel, team: teamLabel, filename: img.name, rawUrl: raw });
+  });
 }
 
-async function loadGallery() {
+/**********************
+ *  ÉTATS & AFFICHAGE
+ **********************/
+function clearGallery() {
   galleryEl.innerHTML = "";
-  const allPhotos = [];
+}
 
-  // 1) charger FAVORIS
-  await loadFavorites(allPhotos);
+function showEmptyMessage() {
+  galleryEl.innerHTML = `
+    <div style="grid-column:1/-1; padding:1rem; border:1px dashed #c0b28a; border-radius:8px; background:#fff;">
+      Aucune image détectée.<br>
+      Place des photos dans
+      <code>full/favorites</code>
+      OU
+      <code>full/&lt;Club&gt;/&lt;Équipe&gt;/ (Match – AAAA-MM-JJ)</code>
+      puis recharge (Ctrl+F5).
+    </div>`;
+}
 
-  // 2) charger EQUIPES
-  await loadTeams(allPhotos);
+async function showDefault() {
+  clearGallery();
+  // 1) favorites d’abord
+  const favCards = await loadFavorites();
+  if (favCards.length) favCards.forEach(c => galleryEl.appendChild(c));
 
-  // 3) tri (noms décroissants pour avoir les plus “récentes” en haut si IMG_1234)
-  allPhotos.sort((a, b) => b.filename.localeCompare(a.filename, undefined, { numeric:true }));
-
-  // 4) rendu
-  if (allPhotos.length === 0) {
-    galleryEl.innerHTML = `
-      <div style="grid-column:1/-1; padding:1rem; border:1px dashed #c0b28a; border-radius:8px; background:#fff;">
-        Aucune image détectée.<br>
-        Place des photos dans <code>full/favorites</code> ou
-        <code>full/&lt;Club&gt;/&lt;Équipe&gt;/(Match – AAAA-MM-JJ)</code> puis recharge (Ctrl+F5).
-      </div>`;
-  } else {
-    allPhotos.forEach(p => galleryEl.appendChild(makeCard(p)));
-  }
-
-  setupFilters();
+  // Si aucun favoris, tu peux décider d’afficher un club/équipe par défaut.
+  if (!favCards.length) showEmptyMessage();
 }
 
 /**********************
  *  FILTRES
  **********************/
-function setupFilters() {
-  if (clubSelect) clubSelect.addEventListener('change', filterGallery);
-  if (teamSelect) teamSelect.addEventListener('change', filterGallery);
-  filterGallery(); // affichage initial
-}
-
-/* Règle :
-   - Si Club == 'all' ET Team == 'all' → n’afficher que data-favorite="true"
-   - Sinon → masquer les favorites et appliquer le filtre club/équipe
-*/
-function filterGallery() {
+async function applyFilters() {
   const club = clubSelect ? clubSelect.value : 'all';
   const team = teamSelect ? teamSelect.value : 'all';
 
-  const photos = document.querySelectorAll('.photo');
+  clearGallery();
+
+  // Aucun filtre => on affiche les favoris
   if (club === 'all' && team === 'all') {
-    photos.forEach(p => {
-      const isFav = p.dataset.favorite === "true";
-      p.style.display = isFav ? 'block' : 'none';
-    });
+    await showDefault();
     return;
   }
 
-  // Filtrage normal (favorites masquées)
-  photos.forEach(p => {
-    if (p.dataset.favorite === "true") { p.style.display = 'none'; return; }
-    const okClub = (club === 'all' || p.dataset.club === club);
-    const okTeam = (team === 'all' || p.dataset.team === team);
-    p.style.display = (okClub && okTeam) ? 'block' : 'none';
-  });
+  // Si club choisi mais équipe = all -> on charge toutes les équipes de ce club
+  if (club !== 'all' && team === 'all') {
+    const teams = STRUCTURE[club] || [];
+    let total = 0;
+    for (const t of teams) {
+      const cards = await loadTeam(club, t);
+      cards.forEach(c => galleryEl.appendChild(c));
+      total += cards.length;
+    }
+    if (total === 0) showEmptyMessage();
+    return;
+  }
+
+  // Si club + équipe choisis
+  if (club !== 'all' && team !== 'all') {
+    const cards = await loadTeam(club, team);
+    if (cards.length === 0) {
+      showEmptyMessage();
+    } else {
+      cards.forEach(c => galleryEl.appendChild(c));
+    }
+    return;
+  }
+
+  // Cas: équipe != all mais club = all -> on cherche l’équipe dans tous les clubs
+  if (club === 'all' && team !== 'all') {
+    let total = 0;
+    for (const c of Object.keys(STRUCTURE)) {
+      if ((STRUCTURE[c] || []).includes(team)) {
+        const cards = await loadTeam(c, team);
+        cards.forEach(card => galleryEl.appendChild(card));
+        total += cards.length;
+      }
+    }
+    if (total === 0) showEmptyMessage();
+  }
 }
 
 /**********************
- *  LANCEMENT
+ *  INIT
  **********************/
-loadGallery();
+async function init() {
+  // par défaut : favoris
+  await showDefault();
 
-// Année footer
+  // Écouteurs des filtres
+  if (clubSelect) clubSelect.addEventListener('change', applyFilters);
+  if (teamSelect) teamSelect.addEventListener('change', applyFilters);
+}
+
+init();
+
+// Année footer (si id="year" est présent quelque part)
 const y = document.getElementById('year');
 if (y) y.textContent = new Date().getFullYear();
